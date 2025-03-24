@@ -32,8 +32,11 @@ function getCurrentFunctionName() {
  *   getFunctionBody(hiHello) => "function hiHello() { console.log('hello world'); }"
  *
  */
-function getFunctionBody(/* func */) {
-  throw new Error('Not implemented');
+function getFunctionBody(func) {
+  if (typeof func !== 'function') {
+    return '';
+  }
+  return func.toString();
 }
 
 /**
@@ -142,8 +145,20 @@ function memoize(func) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, initialAttempts) {
+  return function attemptRetry() {
+    let attempts = initialAttempts;
+    try {
+      return func();
+    } catch (error) {
+      if (attempts > 1) {
+        attempts -= 1;
+        return retry(func, attempts)();
+      }
+
+      throw new Error(error);
+    }
+  };
 }
 
 /**
